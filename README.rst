@@ -4,7 +4,7 @@ Clear Lambda code storage
 
 Motivation
 ----------
-AWS limits the total code storage for Lambda functions to 75GB.
+AWS limits the total code storage for Lambda functions to [75GB](https://docs.aws.amazon.com/lambda/latest/dg/limits.html#limits-list).
 The main reason of reaching such size is because for every deployment of existing function, AWS stores the previous version ("qualifier").
 Usually, when you reach that point, you want to remove old version.
 This tool will help you to!
@@ -27,4 +27,4 @@ Provide credentials:
 
 .. code-block:: bash
 
-    python list_lambdas.py --token_key_id <access_key_id> --token_secret <secret_access_key>
+    python clear_lambda_storage.py --token_key_id <access_key_id> --token_secret <secret_access_key>
