@@ -1,0 +1,31 @@
+service: clear-lambda-storage
+
+provider:
+  name: aws
+  stage: ${opt:stage, 'dev'}
+  runtime: python3.6
+  region: us-east-1
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - lambda:ListFunctions
+        - lambda:ListVersionsByFunction
+        - lambda:DeleteFunction
+      Resource: "*"
+
+package:
+  exclude:
+    - .git/**
+    - node_modules/**
+    - __pycache__/**
+    - package-lock.json
+    - package.json
+    - README.srt
+
+functions:
+  clear_lambda_storage:
+    handler: handler.clear_lambda_storage
+    memorySize: 128
+    timeout: 120
+    events:
+      - schedule: cron(0 12 ? * SUN *) # Run every sunday at 12:00pm UTC
