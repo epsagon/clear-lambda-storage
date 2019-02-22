@@ -30,3 +30,25 @@ Provide credentials:
 .. code-block:: bash
 
     python clear_lambda_storage.py --token_key_id <access_key_id> --token_secret <secret_access_key>
+
+
+⚡️ `Serverless Framework <https://serverless.com>`_ usage
+-----
+.. code-block:: bash
+
+    npm i -g serverless
+    git clone https://github.com/epsagon/clear-lambda-storage
+    cd clear-lambda-storage/
+    serverless deploy
+
+You can schedule this Lambda code storage clean to run every period you want:
+
+.. code-block:: yaml
+
+    functions:
+      clear_lambda_storage:
+        handler: handler.clear_lambda_storage
+        memorySize: 128
+        timeout: 120
+        events:
+          - schedule: cron(0 12 ? * SUN *) # Run every sunday at 12:00pm UTC
