@@ -2,7 +2,7 @@ service: clear-lambda-storage
 
 provider:
   name: aws
-  stage: production
+  stage: ${opt:stage, 'dev'}
   runtime: python3.6
   region: us-east-1
   iamRoleStatements:
