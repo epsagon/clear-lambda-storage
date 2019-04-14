@@ -5,6 +5,7 @@ from __future__ import print_function
 import argparse
 import boto3
 from boto3.session import Session
+from botocore.exceptions import ClientError
 
 
 LATEST = '$LATEST'
@@ -121,9 +122,12 @@ def remove_old_lambda_versions(args):
                 total_deleted_code_size += (version['CodeSize'] / (1024 * 1024))
 
                 # DELETE OPERATION!
-                lambda_client.delete_function(
-                    FunctionName=version['FunctionArn']
-                )
+                try:
+                    lambda_client.delete_function(
+                        FunctionName=version['FunctionArn']
+                    )
+                except ClientError as exception:
+                    print('Could not delete function: {}'.format(str(exception)))
 
     print('-' * 10)
     print('Deleted {} versions from {} functions'.format(
