@@ -31,6 +31,10 @@ Provide credentials:
 
     python clear_lambda_storage.py --token-key-id <access_key_id> --token-secret <secret_access_key>
 
+Alternate usage:
+.. code-block:: bash
+
+    python clear_lambda_storage.py --profile-id <profile_id> --num-to-keep 2
 
 ⚡️ `Serverless Framework <https://serverless.com>`_ usage
 -----
