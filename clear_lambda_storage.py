@@ -4,11 +4,13 @@ Removes old versions of Lambda functions.
 from __future__ import print_function
 import argparse
 import boto3
+import queue
 from boto3.session import Session
 from botocore.exceptions import ClientError
 
 
 LATEST = '$LATEST'
+num_to_keep = 2
 
 
 def list_available_lambda_regions():
@@ -101,6 +103,8 @@ def remove_old_lambda_versions(args):
     regions = list_available_lambda_regions()
     total_deleted_code_size = 0
     total_deleted_functions = {}
+    if args.num_to_keep:
+        num_to_keep = args.num_to_keep
 
     for region in regions:
         print('Scanning {} region'.format(region))
@@ -109,28 +113,29 @@ def remove_old_lambda_versions(args):
         function_generator = lambda_function_generator(lambda_client)
 
         for lambda_function in function_generator:
-            for version in lambda_version_generator(
-                    lambda_client,
-                    lambda_function
-            ):
-                if version['Version'] in (lambda_function['Version'], LATEST):
+            versions_to_keep = queue.Queue(maxsize=num_to_keep)
+            for version in lambda_version_generator(lambda_client, lambda_function):
+                if version['Version'] in (lambda_function['Version'], '$LATEST'):
                     continue
 
-                print('Deleting {} version {}'.format(
-                    version['FunctionName'],
-                    version['Version'])
-                )
-                total_deleted_functions.setdefault(version['FunctionName'], 0)
-                total_deleted_functions[version['FunctionName']] += 1
-                total_deleted_code_size += (version['CodeSize'] / (1024 * 1024))
-
-                # DELETE OPERATION!
-                try:
-                    lambda_client.delete_function(
-                        FunctionName=version['FunctionArn']
+                if versions_to_keep.full():
+                    version_to_delete = versions_to_keep.get()
+                    print('Detected {} with an old version {}'.format(
+                        version_to_delete['FunctionName'],
+                        version_to_delete['Version'])
                     )
-                except ClientError as exception:
-                    print('Could not delete function: {}'.format(str(exception)))
+                    total_deleted_functions.setdefault(version_to_delete['FunctionName'], 0)
+                    total_deleted_functions[version_to_delete['FunctionName']] += 1
+                    total_deleted_code_size += (version_to_delete['CodeSize'] / (1024 * 1024))
+
+                    # DELETE OPERATION!
+                    try:
+                        lambda_client.delete_function(
+                            FunctionName=version_to_delete['FunctionArn']
+                        )
+                    except ClientError as exception:
+                        print('Could not delete function: {}'.format(str(exception)))
+                versions_to_keep.put(version)
 
     print('-' * 10)
     print('Deleted {} versions from {} functions'.format(
@@ -171,6 +176,16 @@ if __name__ == '__main__':
             '(default: "default" from local configuration).'
         ),
         metavar='profile'
+    )
+
+    PARSER.add_argument(
+        '--num-to-keep',
+        type=int,
+        help=(
+            'Number of latest versions to keep. Older versions will be deleted. Optional '
+            '(default: 2).'
+        ),
+        metavar='num-to-keep'
     )
 
     remove_old_lambda_versions(PARSER.parse_args())
