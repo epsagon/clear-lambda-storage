@@ -10,8 +10,6 @@ from botocore.exceptions import ClientError
 
 
 LATEST = '$LATEST'
-num_to_keep = 2
-
 
 def list_available_lambda_regions():
     """
@@ -103,6 +101,8 @@ def remove_old_lambda_versions(args):
     regions = list_available_lambda_regions()
     total_deleted_code_size = 0
     total_deleted_functions = {}
+    num_to_keep = 2
+
     if args.num_to_keep:
         num_to_keep = args.num_to_keep
 
