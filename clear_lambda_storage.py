@@ -110,7 +110,10 @@ def remove_old_lambda_versions(args):
         print('Scanning {} region'.format(region))
 
         lambda_client = init_boto_client('lambda', region, args)
-        function_generator = lambda_function_generator(lambda_client)
+        try:
+            function_generator = lambda_function_generator(lambda_client)
+        except Exception as exception:
+            print('Could not scan region: {}'.format(str(exception)))
 
         for lambda_function in function_generator:
             versions_to_keep = queue.Queue(maxsize=num_to_keep)
