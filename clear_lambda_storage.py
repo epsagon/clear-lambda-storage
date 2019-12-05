@@ -11,6 +11,7 @@ from botocore.exceptions import ClientError
 
 LATEST = '$LATEST'
 
+
 def list_available_lambda_regions():
     """
     Enumerates list of all Lambda regions
@@ -98,7 +99,7 @@ def remove_old_lambda_versions(args):
     :param args: arguments
     :return: None
     """
-    regions = list_available_lambda_regions()
+    regions = args.regions or list_available_lambda_regions()
     total_deleted_code_size = 0
     total_deleted_functions = {}
     num_to_keep = 2
@@ -179,6 +180,13 @@ if __name__ == '__main__':
             '(default: "default" from local configuration).'
         ),
         metavar='profile'
+    )
+
+    PARSER.add_argument(
+        '--regions',
+        nargs='+',
+        help='AWS region to look for old Lambda versions',
+        metavar='regions'
     )
 
     PARSER.add_argument(
