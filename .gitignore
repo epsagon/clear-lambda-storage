@@ -2,3 +2,6 @@
 *.pyc
 __pycache__
 .serverless
+build
+clear_lambda_storage.egg-info
+dist
