@@ -3,7 +3,7 @@ service: clear-lambda-storage
 provider:
   name: aws
   stage: ${opt:stage, 'dev'}
-  runtime: python3.6
+  runtime: python3.7
   region: ${opt:region, 'us-east-1'}
   iamRoleStatements:
     - Effect: "Allow"
