@@ -4,7 +4,7 @@ Removes old versions of Lambda functions.
 from __future__ import print_function
 import argparse
 import boto3
-import queue
+import Queue as queue
 from boto3.session import Session
 from botocore.exceptions import ClientError
 
