@@ -111,8 +111,11 @@ def remove_old_lambda_versions(args):
     total_deleted_functions = {}
     num_to_keep = 2
 
-    if args.num_to_keep:
-        num_to_keep = args.num_to_keep
+    try:
+        if args.num_to_keep:
+            num_to_keep = args.num_to_keep
+    except Exception as exception:
+        print('Could not parse number of version to keep. Using 2')
 
     for region in regions:
         print('Scanning {} region'.format(region))
