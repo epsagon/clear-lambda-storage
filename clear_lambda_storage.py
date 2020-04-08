@@ -55,7 +55,11 @@ def lambda_function_generator(lambda_client):
     :return: Generator
     """
     next_marker = None
-    response = lambda_client.list_functions()
+    try:
+        response = lambda_client.list_functions()
+    except Exception as exception:
+        print('Could not scan region')
+        return iter([])
 
     while next_marker != '':
         next_marker = ''
