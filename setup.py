@@ -19,4 +19,9 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=2.7',
+    entry_points={
+        "console_scripts": [
+            "clear_lambda_storage = clear_lambda_storage:main",
+        ]
+    }
 )
