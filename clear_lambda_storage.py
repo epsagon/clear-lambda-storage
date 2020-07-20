@@ -159,7 +159,7 @@ def remove_old_lambda_versions(args):
     print('Freed {} MBs'.format(int(total_deleted_code_size)))
 
 
-if __name__ == '__main__':
+def main():
     PARSER = argparse.ArgumentParser(
         description='Removes old versions of Lambda functions.'
     )
@@ -210,3 +210,8 @@ if __name__ == '__main__':
     )
 
     remove_old_lambda_versions(PARSER.parse_args())
+
+
+if __name__ == '__main__':
+    main()
+    

@@ -5,7 +5,7 @@ with open("README.rst", "r") as fh:
 
 setuptools.setup(
     name="clear-lambda-storage",
-    version="1.0",
+    version="1.0.1",
     author="",
     author_email="",
     description="Clear Lambda code storage",
@@ -18,7 +18,8 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=2.7',
+    install_requires="boto3",
+    python_requires='>=3',
     entry_points={
         "console_scripts": [
             "clear_lambda_storage = clear_lambda_storage:main",

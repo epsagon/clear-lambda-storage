@@ -7,3 +7,11 @@ python:
 
 script:
   - pip install -r requirements.txt
+
+deploy:
+  provider: pypi
+  username: __token__
+  password:
+    secure: "pdZBAYLQdhPPbGYUeoNZTFyvSgLcOR5aoK1jiO0mDAN1HRl3jEuz7y7lMJzwkVZGeF342lRiOw3kDhrWWHEjG+QBbcYPTfC9tT2pIbeXNWKDWuhksSOjM+DoZJshBXu7ofp3PISqYCDFug1wmP4L4N/J6MMpjdmMGMtOpbR+IWihJi5lvlbn1ErkHv2R0f6iktVunf7XjNOrHcbbhgqc83BUaoF8HNWhmlVE1zPjgk9EuI+HFZBCu7Egn2bL71RlaKctaAo+T1nmE1Enq2FUSHMKKc7ww+l1/OUVAPFxfJSd+FTQT32cvwWQVbxVPLEW3wpmdOfHCdp+wVYXeJf95cO7/iD7U281mpY5jKUKKmXX4lvZZJfRBbHYKCi8P+dPJXtfF1falurvNrizrzZSRSFKF7TSnJWiTCzLmkReekfFOTDZHID++0XtmJ3OjtMYyh64jSUFIlW7guA+WBlw/hO23OSD9DeeKlOiBQx25MSc3dtYkKKZMW2nJdWXK6nEkGKFR2bw428jJVG70HalEC18PNuam3u4zCmLjoUUsnBQtQpGbQrHbu2BRmRo6HAYDaIbsdXFxbf6ORfHawKnydGkDnsSje4mfZDes3B7lytO2JI54MXeGXEZVKazqnzfdoaqVjthGsloMuI5rnc1IHXHw8ogW1VPywlcAmvlrUo="
+  skip_existing: true
+  skip_cleanup: true
