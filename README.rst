@@ -1,9 +1,9 @@
 Clear Lambda code storage
-=====================
+===========================
 
 
 Motivation
-----------
+-----------
 AWS limits the total code storage for Lambda functions to `75GB <https://docs.aws.amazon.com/lambda/latest/dg/limits.html#limits-list>`_.
 
 The main reason of reaching such size is because for every deployment of existing function, AWS stores the previous version ("qualifier").
@@ -14,6 +14,15 @@ This tool will help you to!
 
 Setup
 -----
+Install via pip
+
+.. code-block:: bash
+
+    pip install clear-lambda-storage
+    clear-lambda-storage
+
+Install via source
+
 .. code-block:: bash
 
     git clone https://github.com/epsagon/clear-lambda-storage
@@ -23,7 +32,7 @@ Setup
 
 
 Advanced usage
------
+---------------
 
 Provide credentials:
 
@@ -37,7 +46,7 @@ Alternate usage:
     python clear_lambda_storage.py --profile-id <profile_id> --num-to-keep 2
 
 ⚡️ `Serverless Framework <https://serverless.com>`_ usage
------
+----------------------------------------------------------
 .. code-block:: bash
 
     npm i -g serverless
