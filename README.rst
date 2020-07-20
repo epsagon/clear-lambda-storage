@@ -15,12 +15,14 @@ This tool will help you to!
 Setup
 -----
 Install via pip
+
 .. code-block:: bash
     pip install clear-lambda-storage
     clear-lambda-storage
-    
+
 
 Install via source
+
 .. code-block:: bash
 
     git clone https://github.com/epsagon/clear-lambda-storage
