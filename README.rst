@@ -17,9 +17,9 @@ Setup
 Install via pip
 
 .. code-block:: bash
+
     pip install clear-lambda-storage
     clear-lambda-storage
-
 
 Install via source
 
