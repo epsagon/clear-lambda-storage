@@ -57,7 +57,7 @@ def lambda_function_generator(lambda_client):
     next_marker = None
     try:
         response = lambda_client.list_functions()
-    except Exception as exception:
+    except Exception:
         print('Could not scan region')
         return iter([])
 
@@ -109,13 +109,10 @@ def remove_old_lambda_versions(args):
     regions = args.regions or list_available_lambda_regions()
     total_deleted_code_size = 0
     total_deleted_functions = {}
-    num_to_keep = 2
-
-    try:
-        if args.num_to_keep:
-            num_to_keep = args.num_to_keep
-    except Exception as exception:
-        print('Could not parse number of version to keep. Using 2')
+    num_to_keep = args.num_to_keep
+    print('Keeping {} versions for functions'.format(num_to_keep))
+    if args.function_names:
+        print('Will only delete lambda versions for functions: {}'.format(" ,".join(args.function_names)))
 
     for region in regions:
         print('Scanning {} region'.format(region))
@@ -125,10 +122,17 @@ def remove_old_lambda_versions(args):
             function_generator = lambda_function_generator(lambda_client)
         except Exception as exception:
             print('Could not scan region: {}'.format(str(exception)))
+            continue
 
         for lambda_function in function_generator:
+            # Verify if function name is provided and in case it is, skips all lambdas which name does not match
+            if args.function_names and lambda_function['FunctionName'] not in args.function_names:
+                continue
+
             versions_to_keep = queue.Queue(maxsize=num_to_keep)
+
             for version in lambda_version_generator(lambda_client, lambda_function):
+
                 if version['Version'] in (lambda_function['Version'], '$LATEST'):
                     continue
 
@@ -143,12 +147,15 @@ def remove_old_lambda_versions(args):
                     total_deleted_code_size += (version_to_delete['CodeSize'] / (1024 * 1024))
 
                     # DELETE OPERATION!
-                    try:
-                        lambda_client.delete_function(
-                            FunctionName=version_to_delete['FunctionArn']
-                        )
-                    except ClientError as exception:
-                        print('Could not delete function: {}'.format(str(exception)))
+                    if args.dry_run:
+                        print('Dry-Run: This process would delete function: {}'.format(version_to_delete["FunctionArn"]))
+                    else:
+                        try:
+                            lambda_client.delete_function(
+                                FunctionName=version_to_delete['FunctionArn']
+                            )
+                        except ClientError as exception:
+                            print('Could not delete function: {}'.format(str(exception)))
                 versions_to_keep.put(version)
 
     print('-' * 10)
@@ -160,11 +167,11 @@ def remove_old_lambda_versions(args):
 
 
 def main():
-    PARSER = argparse.ArgumentParser(
+    parser = argparse.ArgumentParser(
         description='Removes old versions of Lambda functions.'
     )
 
-    PARSER.add_argument(
+    parser.add_argument(
         '--token-key-id',
         type=str,
         help=(
@@ -173,7 +180,7 @@ def main():
         ),
         metavar='token-key-id'
     )
-    PARSER.add_argument(
+    parser.add_argument(
         '--token-secret',
         type=str,
         help=(
@@ -182,7 +189,7 @@ def main():
         ),
         metavar='token-secret'
     )
-    PARSER.add_argument(
+    parser.add_argument(
         '--profile',
         type=str,
         help=(
@@ -192,16 +199,17 @@ def main():
         metavar='profile'
     )
 
-    PARSER.add_argument(
+    parser.add_argument(
         '--regions',
         nargs='+',
         help='AWS region to look for old Lambda versions',
         metavar='regions'
     )
 
-    PARSER.add_argument(
+    parser.add_argument(
         '--num-to-keep',
         type=int,
+        default=2,
         help=(
             'Number of latest versions to keep. Older versions will be deleted. Optional '
             '(default: 2).'
@@ -209,9 +217,28 @@ def main():
         metavar='num-to-keep'
     )
 
-    remove_old_lambda_versions(PARSER.parse_args())
+    parser.add_argument(
+        '--function-names',
+        nargs='+',
+        help=(
+            'Clear the storage of a single application. Optional '
+            '(default: None).'
+        ),
+        metavar='function-names'
+    )
+
+    parser.add_argument(
+        '--dry-run',
+        type=bool,
+        default=False,
+        help=(
+            'Run the function without deleting anything. Optional '
+            '(default: False).'
+        ),
+        metavar='dry-run'
+    )
+    remove_old_lambda_versions(parser.parse_args())
 
 
 if __name__ == '__main__':
     main()
-    
